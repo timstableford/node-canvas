@@ -63,6 +63,7 @@
         'src/backend/ImageBackend.cc',
         'src/backend/PdfBackend.cc',
         'src/backend/SvgBackend.cc',
+        'src/backend/XorgBackend.cc',
         'src/Backends.cc',
         'src/Canvas.cc',
         'src/CanvasGradient.cc',
@@ -128,7 +129,8 @@
             '<!@(pkg-config cairo --libs)',
             '<!@(pkg-config libpng --libs)',
             '<!@(pkg-config pangocairo --libs)',
-            '<!@(pkg-config freetype2 --libs)'
+            '<!@(pkg-config freetype2 --libs)',
+            '<!@(pkg-config x11 --libs)'
           ],
           'include_dirs': [
             '<!@(pkg-config cairo --cflags-only-I | sed s/-I//g)',

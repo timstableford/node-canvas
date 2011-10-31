@@ -28,6 +28,7 @@
 #include "backend/ImageBackend.h"
 #include "backend/PdfBackend.h"
 #include "backend/SvgBackend.h"
+#include "backend/XorgBackend.h"
 
 #define GENERIC_FACE_ERROR \
   "The second argument to registerFont is required, and should be an object " \
@@ -97,6 +98,8 @@ NAN_METHOD(Canvas::New) {
         backend = new PdfBackend(width, height);
       else if (0 == strcmp("svg", *Nan::Utf8String(info[2])))
         backend = new SvgBackend(width, height);
+      else if (0 == strcmp("svg", *Nan::Utf8String(info[2])))
+        backend = new XorgBackend(width, height);
       else
         backend = new ImageBackend(width, height);
     }
@@ -106,6 +109,7 @@ NAN_METHOD(Canvas::New) {
   else if (info[0]->IsObject()) {
     if (Nan::New(ImageBackend::constructor)->HasInstance(info[0]) ||
         Nan::New(PdfBackend::constructor)->HasInstance(info[0]) ||
+        Nan::New(XorgBackend::constructor)->HasInstance(info[0]) ||
         Nan::New(SvgBackend::constructor)->HasInstance(info[0])) {
       backend = Nan::ObjectWrap::Unwrap<Backend>(Nan::To<Object>(info[0]).ToLocalChecked());
     }else{
@@ -271,7 +275,7 @@ static void parsePNGArgs(Local<Value> arg, PngClosure& pngargs) {
 
 static void parseJPEGArgs(Local<Value> arg, JpegClosure& jpegargs) {
   // "If Type(quality) is not Number, or if quality is outside that range, the
-  // user agent must use its default quality value, as if the quality argument 
+  // user agent must use its default quality value, as if the quality argument
   // had not been given." - 4.12.5.5
   if (arg->IsObject()) {
     Local<Object> obj = Nan::To<Object>(arg).ToLocalChecked();
@@ -450,9 +454,9 @@ NAN_METHOD(Canvas::ToBuffer) {
       Nan::ThrowError(Canvas::Error(ex));
       return;
     }
-    
+
     parseJPEGArgs(info[1], *closure);
-    
+
     // TODO: only one callback fn in closure // TODO what does this comment mean?
     canvas->Ref();
     closure->pfn = new Nan::Callback(info[0].As<Function>());
@@ -494,7 +498,7 @@ streamPNG(void *c, const uint8_t *data, unsigned len) {
 NAN_METHOD(Canvas::StreamPNGSync) {
   if (!info[0]->IsFunction())
     return Nan::ThrowTypeError("callback function required");
-  
+
   Canvas *canvas = Nan::ObjectWrap::Unwrap<Canvas>(info.This());
 
   PngClosure closure(canvas);

@@ -24,6 +24,7 @@
   "repository": "git://github.com/Automattic/node-canvas.git",
   "scripts": {
     "prebenchmark": "node-gyp build",
+    "build": "node-gyp configure && node-gyp build",
     "benchmark": "node benchmarks/run.js",
     "pretest": "standard examples/*.js test/server.js test/public/*.js benchmark/run.js util/has_lib.js browser.js index.js && node-gyp build",
     "test": "mocha test/*.test.js",
