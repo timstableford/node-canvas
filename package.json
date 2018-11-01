@@ -30,14 +30,7 @@
     "test": "mocha test/*.test.js",
     "pretest-server": "node-gyp build",
     "test-server": "node test/server.js",
-    "install": "node-pre-gyp install --fallback-to-build"
-  },
-  "binary": {
-    "module_name": "canvas-prebuilt",
-    "module_path": "build/Release",
-    "host": "https://github.com/node-gfx/node-canvas-prebuilt/releases/download/",
-    "remote_path": "v{version}",
-    "package_name": "{module_name}-v{version}-{node_abi}-{platform}-{libc}-{arch}.tar.gz"
+    "install": "node-gyp install && node-gyp configure && node-gyp build"
   },
   "dependencies": {
     "nan": "^2.11.1",
