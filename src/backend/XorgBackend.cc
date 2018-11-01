@@ -151,6 +151,13 @@ class PollWorker : public Nan::AsyncWorker {
                     break;
             }
             break;
+        case ConfigureNotify:
+            obj->Set(Nan::New("type").ToLocalChecked(), Nan::New("configure_notify").ToLocalChecked());
+            obj->Set(Nan::New("x").ToLocalChecked(), Nan::New(event.xconfigure.x));
+            obj->Set(Nan::New("y").ToLocalChecked(), Nan::New(event.xconfigure.y));
+            obj->Set(Nan::New("width").ToLocalChecked(), Nan::New(event.xconfigure.width));
+            obj->Set(Nan::New("height").ToLocalChecked(), Nan::New(event.xconfigure.height));
+            break;
         default:
             obj->Set(Nan::New("type").ToLocalChecked(), Nan::New("unhandled").ToLocalChecked());
             obj->Set(Nan::New("value").ToLocalChecked(), Nan::New(event.type));
