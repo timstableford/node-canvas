@@ -29,6 +29,7 @@ class XorgBackend : public Backend
     virtual cairo_surface_t* createSurface();
     virtual cairo_surface_t* recreateSurface();
     virtual void destroySurface();
+    bool resize(int width, int height);
 };
 
 #endif

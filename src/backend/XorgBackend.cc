@@ -152,11 +152,18 @@ class PollWorker : public Nan::AsyncWorker {
             }
             break;
         case ConfigureNotify:
-            obj->Set(Nan::New("type").ToLocalChecked(), Nan::New("configure_notify").ToLocalChecked());
-            obj->Set(Nan::New("x").ToLocalChecked(), Nan::New(event.xconfigure.x));
-            obj->Set(Nan::New("y").ToLocalChecked(), Nan::New(event.xconfigure.y));
+            // If the width or height changes, this resizes the canvas.
+            if (this->backend.resize(event.xconfigure.width, event.xconfigure.height)) {
+                obj->Set(Nan::New("type").ToLocalChecked(), Nan::New("resize").ToLocalChecked());
+            } else {
+                obj->Set(Nan::New("type").ToLocalChecked(), Nan::New("configure_notify").ToLocalChecked());
+                obj->Set(Nan::New("x").ToLocalChecked(), Nan::New(event.xconfigure.x));
+                obj->Set(Nan::New("y").ToLocalChecked(), Nan::New(event.xconfigure.y));
+            }
+
             obj->Set(Nan::New("width").ToLocalChecked(), Nan::New(event.xconfigure.width));
             obj->Set(Nan::New("height").ToLocalChecked(), Nan::New(event.xconfigure.height));
+
             break;
         default:
             obj->Set(Nan::New("type").ToLocalChecked(), Nan::New("unhandled").ToLocalChecked());
@@ -176,6 +183,16 @@ class PollWorker : public Nan::AsyncWorker {
     XorgBackend &backend;
     XEvent event;
 };
+
+bool XorgBackend::resize(int width, int height) {
+    if (this->width != width || this->height != height) {
+        this->width = width;
+        this->height = height;
+        cairo_xlib_surface_set_size(this->surface, this->width, this->height);
+        return true;
+    }
+    return false;
+}
 
 NAN_METHOD(XorgBackend::Abort) {
     XorgBackend *obj = Nan::ObjectWrap::Unwrap<XorgBackend>(info.Holder());
